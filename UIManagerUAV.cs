@@ -19,6 +19,7 @@ public class UIManagerUAV : MonoBehaviour
     public GameObject[] objects;
     [SerializeField] GameObject[] Hint;
     public bool Hint_Bool = false;
+    private string prevSceneName; 
 
     void Start()
     {
@@ -31,16 +32,19 @@ public class UIManagerUAV : MonoBehaviour
 
         // fbx番号を代入
         string sceneName = GlobalVariable.G_fbxNum;
+        prevSceneName = RelativeSceneNumInformation.GetSceneName(SceneManager.GetActiveScene().name);
+        prevSceneName = prevSceneName.Substring(0, 4);
 
-        // habuから来た時の処理
+        // 鳥瞰シーンから来た時の処理
         if (GlobalVariable.G_branch)
         {
             this.transform.position = GlobalVariable.G_PlayerPos;
             this.transform.position += new Vector3(0f, 100f, 0f);
         }
-        else
+        else// ChangeSceneを渡ってきた時の処理
         {
-            sceneName = "502";
+            string activeSceneName = "_" + SceneManager.GetActiveScene().name;
+            sceneName = RelativeSceneNumInformation.GetSceneNum(activeSceneName);
             // プレイヤーに初期角度を与える
             this.transform.eulerAngles = GlobalVariable.G_PlayerRot;
         }
@@ -49,8 +53,8 @@ public class UIManagerUAV : MonoBehaviour
         {
             if (obj.name.Contains(sceneName))
             {
-                // "habu" を含む場合
-                if (obj.name.Contains("habu"))
+                // 鳥瞰シーンのシーン名を含む場合
+                if (obj.name.Contains(prevSceneName))
                 {
                     obj.SetActive(true);
 
@@ -59,7 +63,7 @@ public class UIManagerUAV : MonoBehaviour
                         hintObject.SetActive(Hint_Bool);
                     }
                 }
-                // "habu" を含まない場合
+                // 鳥瞰シーンのシーン名を含まない場合
                 else
                 {
                     ChangeFBXWall = obj;
@@ -67,7 +71,7 @@ public class UIManagerUAV : MonoBehaviour
                 }
             }
             // オブジェクト名の最後3文字が異なる場合、オブジェクトを非アクティブにする
-            else if (obj.name.Contains("habu"))
+            else if (obj.name.Contains(prevSceneName))
             {
                 obj.SetActive(false);
             }
@@ -151,21 +155,21 @@ public class UIManagerUAV : MonoBehaviour
         {
             if (obj.name.Contains(NextPanel))
             {
-                if (obj.name.Contains("habu"))
+                if (obj.name.Contains(prevSceneName))
                 {
-                    // "habu" を含む場合
+                    // 鳥瞰シーンのシーン名を含む場合
                     obj.SetActive(true);
                     Debug.Log(obj.name);
                 }
                 else
                 {
-                    // "habu" を含まない場合
+                    // 鳥瞰シーンのシーン名を含まない場合
                     ChangeFBXWall = obj;
                     ChangeFBXWall.SetActive(false);
                 }
             }
             // オブジェクト名の最後3文字が異なる場合、オブジェクトを非アクティブにする
-            else if (obj.name.Contains("habu"))
+            else if (obj.name.Contains(prevSceneName))
             {
                 obj.SetActive(false);
             }
